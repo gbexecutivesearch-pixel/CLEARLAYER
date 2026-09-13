@@ -1,3 +1,4 @@
+import Link from "next/link";
 import styles from "./page.module.css";
 
 export default function Home() {
@@ -12,13 +13,16 @@ export default function Home() {
           <h1>Secure Payout Portal</h1>
 
           <p className={styles.description}>
-            Your secure payout session is ready. Continue to access your
-            payout details.
+            Your secure payout session is ready. Continue to
+            access your payout details.
           </p>
 
-          <button type="button" className={styles.button}>
+          <Link
+            href="/access"
+            className={styles.button}
+          >
             Access Your Payout
-          </button>
+          </Link>
 
           <p className={styles.footer}>
             Securely processed by ClearLayer
