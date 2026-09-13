@@ -1,10 +1,13 @@
-"use client";
-
-import { useState } from "react";
+import { redirect } from "next/navigation";
+import { getSession } from "@/lib/session";
 import styles from "./payout.module.css";
 
-export default function PayoutPage() {
-  const [recipientName, setRecipientName] = useState("Recipient");
+export default async function PayoutPage() {
+  const session = await getSession();
+
+  if (!session) {
+    redirect("/access");
+  }
 
   return (
     <main className={styles.page}>
@@ -26,7 +29,7 @@ export default function PayoutPage() {
             <p className={styles.eyebrow}>Payout overview</p>
 
             <h1>
-              Welcome, <span>{recipientName}</span>
+              Welcome, <span>{session.recipientName}</span>
             </h1>
 
             <p>
@@ -66,7 +69,9 @@ export default function PayoutPage() {
 
             <div>
               <span>Current status</span>
-              <strong className={styles.pending}>Pending payout</strong>
+              <strong className={styles.pending}>
+                Pending payout
+              </strong>
             </div>
           </div>
 
@@ -75,11 +80,31 @@ export default function PayoutPage() {
 
             <div>
               <strong>Processing requirement</strong>
+
               <p>
-                A $42.00 USDC processing fee on Base is required before the
-                payout can proceed.
+                A $42.00 USDC processing fee on Base is required
+                before the payout can proceed.
               </p>
             </div>
+          </div>
+
+          <a
+            href="/payout/continue"
+            className={styles.button}
+          >
+            Continue securely
+            <span>→</span>
+          </a>
+
+          <p className={styles.disclaimer}>
+            The $2,000.00 payout remains pending until an actual
+            settlement transaction has been completed and verified.
+          </p>
+        </div>
+      </section>
+    </main>
+  );
+      }            </div>
           </div>
 
           <button type="button" className={styles.button}>
