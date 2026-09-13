@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { setSession } from "@/lib/session";
 
 const ACCESS_CODE = process.env.CLEARLAYER_ACCESS_CODE;
 
@@ -58,6 +59,8 @@ export async function POST(request: Request) {
       );
     }
 
+    await setSession(name);
+
     return NextResponse.json({
       success: true,
       recipientName: name,
@@ -73,4 +76,4 @@ export async function POST(request: Request) {
       { status: 500 },
     );
   }
-        }
+  }
