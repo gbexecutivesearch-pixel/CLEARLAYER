@@ -9,12 +9,15 @@ export default function AccessPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(
+    event: FormEvent<HTMLFormElement>,
+  ) {
     event.preventDefault();
-
     setError("");
 
-    if (!name.trim()) {
+    const trimmedName = name.trim();
+
+    if (!trimmedName) {
       setError("Enter your full name.");
       return;
     }
@@ -33,12 +36,15 @@ export default function AccessPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name: name.trim(),
+          name: trimmedName,
           code,
         }),
       });
 
-      const result = await response.json();
+      const result: {
+        success?: boolean;
+        message?: string;
+      } = await response.json();
 
       if (!response.ok || !result.success) {
         setError(
@@ -48,16 +54,6 @@ export default function AccessPage() {
         );
         return;
       }
-
-      const recipientName =
-        typeof result.recipientName === "string"
-          ? result.recipientName
-          : name.trim();
-
-      sessionStorage.setItem(
-        "clearlayer_recipient_name",
-        recipientName,
-      );
 
       window.location.href = "/payout";
     } catch {
@@ -80,18 +76,23 @@ export default function AccessPage() {
           <h1>Access Your Payout</h1>
 
           <p className={styles.description}>
-            Enter the details provided to you to securely access your payout
-            portal.
+            Enter the details provided to you to securely access
+            your payout portal.
           </p>
 
-          <form onSubmit={handleSubmit} className={styles.form}>
+          <form
+            onSubmit={handleSubmit}
+            className={styles.form}
+          >
             <label>
               <span>Recipient name</span>
 
               <input
                 type="text"
                 value={name}
-                onChange={(event) => setName(event.target.value)}
+                onChange={(event) =>
+                  setName(event.target.value)
+                }
                 placeholder="Enter your full name"
                 autoComplete="name"
                 disabled={loading}
@@ -120,7 +121,10 @@ export default function AccessPage() {
             </label>
 
             {error && (
-              <p className={styles.error} role="alert">
+              <p
+                className={styles.error}
+                role="alert"
+              >
                 {error}
               </p>
             )}
@@ -130,7 +134,9 @@ export default function AccessPage() {
               className={styles.button}
               disabled={loading}
             >
-              {loading ? "Verifying securely…" : "Continue securely"}
+              {loading
+                ? "Verifying securely…"
+                : "Continue securely"}
             </button>
           </form>
 
@@ -141,77 +147,4 @@ export default function AccessPage() {
       </section>
     </main>
   );
-    }          <p className={styles.description}>
-            Enter the details provided to you to securely access your payout
-            portal.
-          </p>
-
-          <form onSubmit={handleSubmit} className={styles.form}>
-            <label>
-              <span>Recipient name</span>
-
-              <input
-                type="text"
-                value={name}
-                onChange={(event) => setName(event.target.value)}
-                placeholder="Enter your full name"
-                autoComplete="name"
-                disabled={loading}
-              />
-            </label>
-
-            <label>
-              <span>6-digit access code</span>
-
-              <input
-                type="password"
-                value={code}
-                onChange={(event) =>
-                  setCode(
-                    event.target.value
-                      .replace(/\D/g, "")
-                      .slice(0, 6),
-                  )
-                }
-                placeholder="Enter access code"
-                inputMode="numeric"
-                maxLength={6}
-                autoComplete="one-time-code"
-                disabled={loading}
-              />
-            </label>
-
-            {error && (
-              <p className={styles.error} role="alert">
-                {error}
-              </p>
-            )}
-
-            <button
-              type="submit"
-              className={styles.button}
-              disabled={loading}
-            >
-              {loading ? "Verifying securely…" : "Continue securely"}
-            </button>
-          </form>
-
-          <p className={styles.footer}>
-            Your access session is protected by ClearLayer.
-          </p>
-        </div>
-      </section>
-    </main>
-  );
-        }              Continue securely
-            </button>
-          </form>
-
-          <p className={styles.footer}>
-            Your access session is protected by ClearLayer.
-          </p>
-        </div>
-      </section>
-    </main>
-  );
-                        }
+        }
