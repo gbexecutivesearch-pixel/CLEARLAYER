@@ -1,0 +1,98 @@
+"use client";
+
+import { useState } from "react";
+import styles from "./payout.module.css";
+
+export default function PayoutPage() {
+  const [recipientName, setRecipientName] = useState("Recipient");
+
+  return (
+    <main className={styles.page}>
+      <section className={styles.container}>
+        <header className={styles.header}>
+          <div className={styles.brand}>
+            <div className={styles.logo}>CL</div>
+            <span>ClearLayer</span>
+          </div>
+
+          <div className={styles.secure}>
+            <span className={styles.dot} />
+            Secure session
+          </div>
+        </header>
+
+        <div className={styles.content}>
+          <div className={styles.welcome}>
+            <p className={styles.eyebrow}>Payout overview</p>
+
+            <h1>
+              Welcome, <span>{recipientName}</span>
+            </h1>
+
+            <p>
+              Review your payout details and the current processing
+              requirement below.
+            </p>
+          </div>
+
+          <div className={styles.payoutCard}>
+            <div className={styles.cardTop}>
+              <span>Payout amount</span>
+
+              <span className={styles.status}>
+                <span />
+                Pending payout
+              </span>
+            </div>
+
+            <div className={styles.amount}>$2,000.00</div>
+
+            <div className={styles.sender}>
+              <span>From</span>
+              <strong>Mark Harrison</strong>
+            </div>
+          </div>
+
+          <div className={styles.details}>
+            <div>
+              <span>Processing fee</span>
+              <strong>$42.00 USDC</strong>
+            </div>
+
+            <div>
+              <span>Network</span>
+              <strong>Base</strong>
+            </div>
+
+            <div>
+              <span>Current status</span>
+              <strong className={styles.pending}>Pending payout</strong>
+            </div>
+          </div>
+
+          <div className={styles.notice}>
+            <div className={styles.noticeIcon}>i</div>
+
+            <div>
+              <strong>Processing requirement</strong>
+              <p>
+                A $42.00 USDC processing fee on Base is required before the
+                payout can proceed.
+              </p>
+            </div>
+          </div>
+
+          <button type="button" className={styles.button}>
+            Continue securely
+            <span>→</span>
+          </button>
+
+          <p className={styles.disclaimer}>
+            The payout remains pending until the required processing steps
+            have been completed.
+          </p>
+        </div>
+      </section>
+    </main>
+  );
+          }
