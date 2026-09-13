@@ -2,6 +2,7 @@
 
 import { useAccount, useDisconnect } from "wagmi";
 import ConnectButton from "./connect-button";
+import NetworkCheck from "./network-check";
 import styles from "./wallet.module.css";
 
 function shortenAddress(address: string) {
@@ -11,6 +12,8 @@ function shortenAddress(address: string) {
 export default function WalletPage() {
   const { address, isConnected, chain } = useAccount();
   const { disconnect } = useDisconnect();
+
+  const isBase = chain?.id === 8453;
 
   return (
     <main className={styles.page}>
@@ -33,7 +36,7 @@ export default function WalletPage() {
           <div className={styles.network}>
             <span
               className={
-                chain?.id === 8453
+                isBase
                   ? styles.networkDot
                   : styles.networkDotWarning
               }
@@ -41,13 +44,15 @@ export default function WalletPage() {
 
             <div>
               <strong>
-                {chain?.name ?? "Base network"}
+                {isConnected
+                  ? chain?.name ?? "Unknown network"
+                  : "Base network"}
               </strong>
 
               <span>
-                {chain?.id === 8453
+                {isBase
                   ? "Base network verified"
-                  : "Switch to Base before continuing"}
+                  : "Base is required to continue"}
               </span>
             </div>
           </div>
@@ -62,6 +67,8 @@ export default function WalletPage() {
                   <span>Wallet connection established.</span>
                 </div>
               </div>
+
+              <NetworkCheck />
 
               <button
                 type="button"
@@ -83,4 +90,4 @@ export default function WalletPage() {
       </section>
     </main>
   );
-        }
+            }
