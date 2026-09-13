@@ -1,10 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useAccount, useDisconnect } from "wagmi";
+import ConnectButton from "./connect-button";
 import styles from "./wallet.module.css";
 
+function shortenAddress(address: string) {
+  return `${address.slice(0, 6)}...${address.slice(-4)}`;
+}
+
 export default function WalletPage() {
-  const [connected, setConnected] = useState(false);
+  const { address, isConnected, chain } = useAccount();
+  const { disconnect } = useDisconnect();
 
   return (
     <main className={styles.page}>
@@ -14,39 +20,59 @@ export default function WalletPage() {
 
           <p className={styles.eyebrow}>Wallet connection</p>
 
-          <h1>Connect your wallet</h1>
+          <h1>
+            {isConnected ? "Wallet connected" : "Connect your wallet"}
+          </h1>
 
           <p className={styles.description}>
-            Connect a compatible wallet to view your wallet information and
-            continue through the secure payout process.
+            {isConnected
+              ? "Your wallet connection is active. Review the network and wallet details below."
+              : "Connect a compatible wallet to continue through the secure payout process."}
           </p>
 
           <div className={styles.network}>
-            <span className={styles.networkDot} />
+            <span
+              className={
+                chain?.id === 8453
+                  ? styles.networkDot
+                  : styles.networkDotWarning
+              }
+            />
+
             <div>
-              <strong>Base network</strong>
-              <span>Ethereum-compatible network</span>
+              <strong>
+                {chain?.name ?? "Base network"}
+              </strong>
+
+              <span>
+                {chain?.id === 8453
+                  ? "Base network verified"
+                  : "Switch to Base before continuing"}
+              </span>
             </div>
           </div>
 
-          {!connected ? (
-            <button
-              type="button"
-              className={styles.button}
-              onClick={() => setConnected(true)}
-            >
-              Connect wallet
-              <span>→</span>
-            </button>
-          ) : (
-            <div className={styles.connected}>
-              <div className={styles.check}>✓</div>
+          {isConnected && address ? (
+            <>
+              <div className={styles.connected}>
+                <div className={styles.check}>✓</div>
 
-              <div>
-                <strong>Wallet connected</strong>
-                <span>Connection established successfully.</span>
+                <div>
+                  <strong>{shortenAddress(address)}</strong>
+                  <span>Wallet connection established.</span>
+                </div>
               </div>
-            </div>
+
+              <button
+                type="button"
+                className={styles.secondaryButton}
+                onClick={() => disconnect()}
+              >
+                Disconnect wallet
+              </button>
+            </>
+          ) : (
+            <ConnectButton />
           )}
 
           <p className={styles.disclaimer}>
@@ -57,4 +83,4 @@ export default function WalletPage() {
       </section>
     </main>
   );
-    }
+        }
