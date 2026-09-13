@@ -2,6 +2,7 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
 
 const SESSION_COOKIE = "clearlayer_session";
+const SESSION_MAX_AGE = 60 * 60;
 
 type SessionPayload = {
   recipientName: string;
@@ -21,7 +22,9 @@ function getSessionSecret() {
 }
 
 function encodePayload(payload: SessionPayload) {
-  return Buffer.from(JSON.stringify(payload)).toString("base64url");
+  return Buffer.from(JSON.stringify(payload)).toString(
+    "base64url",
+  );
 }
 
 function createSignature(payload: string) {
@@ -66,7 +69,10 @@ export function verifySessionToken(
 
     if (
       actualBuffer.length !== expectedBuffer.length ||
-      !timingSafeEqual(actualBuffer, expectedBuffer)
+      !timingSafeEqual(
+        actualBuffer,
+        expectedBuffer,
+      )
     ) {
       return null;
     }
@@ -76,16 +82,33 @@ export function verifySessionToken(
       "base64url",
     ).toString("utf8");
 
-    const session = JSON.parse(decoded) as SessionPayload;
+    const session = JSON.parse(
+      decoded,
+    ) as SessionPayload;
 
     if (
       typeof session.recipientName !== "string" ||
-      typeof session.createdAt !== "number"
+      !session.recipientName.trim() ||
+      typeof session.createdAt !== "number" ||
+      !Number.isFinite(session.createdAt)
     ) {
       return null;
     }
 
-    return session;
+    const age =
+      Date.now() - session.createdAt;
+
+    if (
+      age < 0 ||
+      age > SESSION_MAX_AGE * 1000
+    ) {
+      return null;
+    }
+
+    return {
+      recipientName: session.recipientName.trim(),
+      createdAt: session.createdAt,
+    };
   } catch {
     return null;
   }
@@ -104,7 +127,7 @@ export async function setSession(
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
-      maxAge: 60 * 60,
+      maxAge: SESSION_MAX_AGE,
     },
   );
 }
@@ -112,15 +135,21 @@ export async function setSession(
 export async function getSession() {
   const cookieStore = await cookies();
 
-  const token = cookieStore.get(
-    SESSION_COOKIE,
-  )?.value;
+  const token =
+    cookieStore.get(SESSION_COOKIE)?.value;
 
   if (!token) {
     return null;
   }
 
-  return verifySessionToken(token);
+  const session = verifySessionToken(token);
+
+  if (!session) {
+    await clearSession();
+    return null;
+  }
+
+  return session;
 }
 
 export async function clearSession() {
