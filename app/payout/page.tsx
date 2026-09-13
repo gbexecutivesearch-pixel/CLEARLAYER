@@ -104,20 +104,4 @@ export default async function PayoutPage() {
       </section>
     </main>
   );
-      }            </div>
-          </div>
-
-          <button type="button" className={styles.button}>
-            Continue securely
-            <span>→</span>
-          </button>
-
-          <p className={styles.disclaimer}>
-            The payout remains pending until the required processing steps
-            have been completed.
-          </p>
-        </div>
-      </section>
-    </main>
-  );
-          }
+                                   }
